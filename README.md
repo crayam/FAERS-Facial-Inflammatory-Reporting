@@ -49,23 +49,4 @@ The historical crude script includes exact intervals for zero-cell tables. Final
 
 TTO analysis is exploratory and descriptive. It uses complete retained DEMO.EVENT_DT and index-drug-linked THER.START_DT dates, excludes ambiguous distinct nonblank start dates and negative intervals, and performs no date imputation or between-drug testing. NumPy linear quantiles were independently checked with R `quantile(type = 7)`. The v1.1 verification confirmed the original numerical TTO summaries.
 
-## Software and dependencies
 
-- **R 4.2.2** is recorded in the saved model results; `jsonlite` is used for JSON input/output.
-- **Python 3.12.14** is documented for crude analysis and independent TTO verification; versions were not recorded for every historical stage.
-- Python dependencies used across the scripts include `numpy`, `pandas`, `python-docx` and `openpyxl`, together with standard-library modules such as `sqlite3`.
-- Historical package versions were not comprehensively recorded. NumPy 2.3.5 is documented for independent TTO verification, not necessarily for every earlier analysis.
-
-## Inputs and execution
-
-This is a **code-only research repository**. Raw FAERS ZIPs, the original phenotype dictionary DOCX, report-level intermediate datasets, saved results and stage-specific checksum files are not included.
-
-The scripts retain the original project-relative layout, in which these repository contents were located in a `work/` directory alongside `inputs/` and `outputs/`. To use that layout, place this checkout at `PROJECT/work/` and run the relevant scripts from `PROJECT/`. Some scripts determine the project root from their own location; others use the current working directory.
-
-Raw extraction requires the 17 source ZIPs and the frozen dictionary. Later stages require the corresponding retained-report masters, outcome flags, characteristics, validation records and checksum manifests. Certain historical validators also use prior workbooks. Inspect each script's input paths before execution. Do not bypass checksum assertions or change frozen definitions to accommodate missing inputs.
-
-The approximate processing order is cohort construction → outcome unions → characteristics and crude analyses → model preparation, fitting and validation → sensitivity/secondary analyses → PRR/PT composition and TTO. This repository does not provide a self-contained, one-command reconstruction without the required inputs.
-
-## Interpretation
-
-FAERS analyses describe reporting odds, reporting patterns and disproportionate reporting. They do not estimate adverse-event incidence or establish causal effects. Reports may contain multiple preferred terms, and DEMO.EVENT_DT is a report-level event date rather than a validated onset date for a specific outcome term.
