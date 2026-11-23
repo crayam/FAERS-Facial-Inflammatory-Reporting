@@ -1,0 +1,17 @@
+args <- commandArgs(trailingOnly=TRUE)
+root <- normalizePath(args[1])
+work <- file.path(root,"work/tto_correction_v1_1")
+x <- read.csv(file.path(root,"outputs/tto_correction_v1_1/valid_TTO_verified_v1.1.csv"), colClasses="character", fileEncoding="UTF-8-BOM")
+tot <- read.csv(file.path(work,"totals.csv"),fileEncoding="UTF-8-BOM")
+start <- as.Date(x$START_DT,format="%Y%m%d")
+event <- as.Date(x$EVENT_DT,format="%Y%m%d")
+delta <- as.integer(event-start)
+stopifnot(!anyNA(start),!anyNA(event),all(delta>=0),all(delta==as.integer(x$TTO_days)),!anyDuplicated(x$CASEID),nrow(x)==119)
+res <- lapply(tot$drug,function(d){
+ v<-delta[x$drug==d];n<-length(v);N<-tot$Primary11_total_n[tot$drug==d]
+ q<-if(n)quantile(v,probs=c(0,.25,.5,.75,1),type=7,names=FALSE) else rep(NA_real_,5)
+ data.frame(drug=d,Primary11_total_n=N,valid_TTO_n=n,completeness=n/N,median_days=q[3],Q1_days=q[2],Q3_days=q[4],IQR_width_days=q[4]-q[2],min_days=q[1],max_days=q[5],bin_0_30=sum(v<=30),bin_31_90=sum(v>=31&v<=90),bin_91_180=sum(v>=91&v<=180),bin_over180=sum(v>180))
+})
+write.csv(do.call(rbind,res),file.path(work,"R_type7_validation.csv"),row.names=FALSE,na="")
+writeLines(c(R.version.string,"stats package version",as.character(packageVersion("stats")),"All 119 dates re-parsed with as.Date; 119 date differences agree; quantile(type=7)."),file.path(work,"R_validation.txt"))
+print(do.call(rbind,res));cat(R.version.string,"\n")
